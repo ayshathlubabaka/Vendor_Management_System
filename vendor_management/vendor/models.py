@@ -18,6 +18,7 @@ class Purchase_Order(models.Model):
     po_number = models.CharField(max_length=50, unique=True)
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
     order_date = models.DateTimeField(auto_now_add=True)
+    delivery_date = models.DateTimeField()
     items = models.JSONField()
     quantity = models.IntegerField()
     PO_STATUS_CHOICES = (
@@ -32,6 +33,13 @@ class Purchase_Order(models.Model):
 
     def __str__(self):
         return self.po_number
+    
+    def save(self, *args, **kwargs):
+        if self.pk:
+            original_instance = Purchase_Order.objects.get(pk=self.pk)
+            self._original_status = original_instance.status
+            self._original_acknowledgment_date = original_instance.acknowledgment_date
+        super().save(*args, **kwargs)
     
 class HistoricalPerformance(models.Model):
     vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
