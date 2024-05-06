@@ -14,9 +14,23 @@ The Vendor Management System API is a Django-based application that allows users
    On Windows: fatenv\Scripts\activate
 5. Install dependencies: pip install -r requirements.txt
 6. Apply database migrations: python manage.py migrate
+7. Create a superuser: python manage.py createsuperuser
 7. Start the development server: python manage.py runserver
 
+## Superuser Credentials
+
+After creating a superuser using the `createsuperuser` command, you can use the provided username and password to obtain access and refresh tokens for authentication.
+
+## Authorization
+
+To authorize requests, include the obtained JWT token as a bearer token in the authorization header.
+
 # API Endpoints
+
+Token
+
+POST /api/token/ : Obtain a JWT token by providing valid credentials
+POST /api/token/refresh/ : Refresh the JWT token
 
 Vendors
 
@@ -33,6 +47,10 @@ GET /api/purchase_orders/: List all purchase orders with optional vendor filteri
 GET /api/purchase_orders/{po_id}/: Retrieve details of a specific purchase order.
 PUT /api/purchase_orders/{po_id}/: Update a purchase order.
 DELETE /api/purchase_orders/{po_id}/: Delete a purchase order.
+
+Acknowledge Purchase Order
+
+POST /api/purchase_orders/{po_id}/acknowledge
 
 Vendor Performance Metrics
 
