@@ -120,6 +120,7 @@ class VendorPurchaseOrderAPITest(APITestCase):
         response = self.client.get(f'/api/purchase_orders/{purchase_order_id}/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+        # Acknowledge a purchase order
         response = self.client.put(f'/api/purchase_orders/{purchase_order_id}/acknowledge/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -156,3 +157,30 @@ class VendorPurchaseOrderAPITest(APITestCase):
         response = self.client.delete(f'/api/purchase_orders/{purchase_order_id}/')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
+class HistoricalPerformanceAPITest(APITestCase):
+    def setUp(self):
+        self.client = APIClient()
+        self.user = User.objects.create_user(username='test_user', password='test_password')
+        refresh = RefreshToken.for_user(self.user)
+        self.access_token = str(refresh.access_token)
+
+        # Create a vendor
+        vendor_data = {
+            'name': 'GHI Corporation',
+            'contact_details': '121-456-7890',
+            'address': 'XYZ Mainn St, City, Country',
+            'vendor_code': 'VENDOR003',
+            'on_time_delivery_rate': 93.5,
+            'quality_rating_avg': 6.5,
+            'average_response_time': 2.5,
+            'fulfillment_rate': 91.0,
+        }
+        self.client.force_authenticate(user=self.user)
+        response = self.client.post('/api/vendor/', vendor_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.vendor_id = response.data['id']
+
+    def test_historical_performance_retrieval(self):
+       
+        response = self.client.get(f'/api/vendors/{self.vendor_id}/performance/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

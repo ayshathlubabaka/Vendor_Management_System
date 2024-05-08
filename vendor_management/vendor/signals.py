@@ -10,7 +10,6 @@ purchase_order_modified = ModelSignal()
 
 @receiver(purchase_order_modified)
 def update_vendor_performance(sender, instance, **kwargs):
-    print('signal called')
     try:
         vendor = instance.vendor
         total_completed_orders = Purchase_Order.objects.filter(vendor=vendor,status__iexact='completed').count()
